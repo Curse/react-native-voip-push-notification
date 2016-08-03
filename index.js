@@ -3,7 +3,10 @@
 import {
     NativeModules,
     DeviceEventEmitter,
+    Platform
 } from 'react-native';
+
+const ANDROID = 'android';
 
 var RNVoipPushNotificationManager = NativeModules.RNVoipPushNotificationManager;
 var invariant = require('fbjs/lib/invariant');
@@ -16,7 +19,7 @@ var DEVICE_LOCAL_NOTIF_EVENT = 'voipLocalNotificationReceived';
 
 export default class RNVoipPushNotification {
 
-    static wakeupByPush = (RNVoipPushNotificationManager.wakeupByPush === 'true');
+    static wakeupByPush = Platform.OS === ANDROID ? false : (RNVoipPushNotificationManager.wakeupByPush === 'true');
 
     /**
      * Schedules the localNotification for immediate presentation.
@@ -30,6 +33,10 @@ export default class RNVoipPushNotification {
      * - `userInfo`  : An optional object containing additional notification data.
      */
     static presentLocalNotification(details) {
+        if (Platform.OS === ANDROID) {
+            return;
+        }
+
         RNVoipPushNotificationManager.presentLocalNotification(details);
     }
 
@@ -45,6 +52,10 @@ export default class RNVoipPushNotification {
      *   handler will be invoked with a hex string representing the deviceToken.
      */
     static addEventListener(type, handler) {
+        if (Platform.OS === ANDROID) {
+            return;
+        }
+
         invariant(
             type === 'notification' || type === 'register' || type === 'localNotification',
             'RNVoipPushNotificationManager only supports `notification`, `register` and `localNotification` events'
@@ -80,6 +91,10 @@ export default class RNVoipPushNotification {
      * memory leaks
      */
     static removeEventListener(type, handler) {
+        if (Platform.OS === ANDROID) {
+            return;
+        }
+
         invariant(
             type === 'notification' || type === 'register' || type === 'localNotification',
             'RNVoipPushNotification only supports `notification`, `register` and `localNotification` events'
@@ -107,6 +122,10 @@ export default class RNVoipPushNotification {
      * will be requested.
      */
     static requestPermissions(permissions) {
+        if (Platform.OS === ANDROID) {
+            return;
+        }
+
         var requestedPermissions = {};
         if (permissions) {
             requestedPermissions = {
@@ -152,6 +171,10 @@ export default class RNVoipPushNotification {
      * An alias for `getAlert` to get the notification's main message string
      */
     getMessage() {
+        if (Platform.OS === ANDROID) {
+            return null;
+        }
+
         // alias because "alert" is an ambiguous name
         return this._alert;
     }
@@ -160,6 +183,10 @@ export default class RNVoipPushNotification {
      * Gets the sound string from the `aps` object
      */
     getSound() {
+        if (Platform.OS === ANDROID) {
+            return null;
+        }
+
         return this._sound;
     }
   
@@ -167,6 +194,10 @@ export default class RNVoipPushNotification {
      * Gets the notification's main message from the `aps` object
      */
     getAlert() {
+        if (Platform.OS === ANDROID) {
+            return null;
+        }
+
         return this._alert;
     }
   
@@ -174,6 +205,10 @@ export default class RNVoipPushNotification {
      * Gets the badge count number from the `aps` object
      */
     getBadgeCount() {
+        if (Platform.OS === ANDROID) {
+            return 0;
+        }
+
         return this._badgeCount;
     }
   
@@ -181,6 +216,10 @@ export default class RNVoipPushNotification {
      * Gets the data object on the notif
      */
     getData() {
+        if (Platform.OS === ANDROID) {
+            return null;
+        }
+        
         return this._data;
     }
 }
