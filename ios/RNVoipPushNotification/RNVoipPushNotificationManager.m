@@ -187,6 +187,9 @@ RCT_EXPORT_METHOD(requestPermissions:(NSDictionary *)permissions)
     if (RCTRunningInAppExtension()) {
         return;
     }
+    if (![PKPushRegistry class]) {
+        return;
+    }
     [self registerUserNotification:permissions];
     [self voipRegistration];
 }
